@@ -12,10 +12,16 @@ def test_venn():
     from test_cases import venn_check_tests
     venn_check_tests.main()
 
+
+def test_hierarchy():
+    from test_cases import hierarchy_decision_tests
+    hierarchy_decision_tests.main()
+
 def main():
     # test_network()
     # test_timeseries()
-    test_venn()
+    # test_venn()
+    test_hierarchy()
 
 
 if __name__ == '__main__':
