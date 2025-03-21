@@ -26,11 +26,15 @@ def has_regular_intervals(df, datetime_col):
     return False
 
 def is_time_series(df, deb=True):
-    datetime_col = detect_datetime_columns(df)
-    res = is_datetime_index(df) or len(datetime_col) > 0
-    if deb:
-        print(f'is_datetime_index? {is_datetime_index(df)}. detect_datetime_columns? {len(datetime_col)}') 
-    return res
+    try:
+        datetime_col = detect_datetime_columns(df)
+        res = is_datetime_index(df) or len(datetime_col) > 0
+        if deb:
+            print(f'is_datetime_index? {is_datetime_index(df)}. detect_datetime_columns? {len(datetime_col)}') 
+        return res
+    except Exception as e:
+        print(f"Error in is_time_series: {e}")
+        return False
 
 def test():
     path = '/Users/priyankachakraborti/GIT/visualisation-recommendation/time_series_test_cases/mixed_date_formats.csv'

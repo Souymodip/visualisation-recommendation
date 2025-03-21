@@ -17,11 +17,17 @@ def test_hierarchy():
     from test_cases import hierarchy_decision_tests
     hierarchy_decision_tests.main()
 
+
+def test_cat_num_rec():
+    from test_cases import cat_num_rec_test
+    cat_num_rec_test.main()
+
 def main():
     # test_network()
     # test_timeseries()
     # test_venn()
-    test_hierarchy()
+    # test_hierarchy()
+    test_cat_num_rec()
 
 
 if __name__ == '__main__':

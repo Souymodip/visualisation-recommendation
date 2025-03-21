@@ -9,7 +9,7 @@ def check_ordered(df):
     return is_weakly_ordered(df)
 
 
-def flow_chart(df):
+def flow_chart(df:pd.DataFrame):
     num_columns = len(df.columns)
     is_ordered = check_ordered(df)
     df_is_small = is_small(df)

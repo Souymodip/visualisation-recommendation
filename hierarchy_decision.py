@@ -53,18 +53,36 @@ def is_forest_and_count_roots(edges):
     roots = sum(1 for _, d in G.in_degree() if d == 0)
     return True, roots
 
+def check_single_rooted_hierarchy(df):
+    rels = get_relation_pairs(df)
+    is_forest, num_roots = is_forest_and_count_roots(rels)
+    if (is_forest and num_roots == 1):
+        return True
+    return False
+
+
+def check_multiple_rooted_hierarchy(df):
+    rels = get_relation_pairs(df)
+    is_forest, num_roots = is_forest_and_count_roots(rels)
+    if (is_forest and num_roots >= 1):
+        return True
+    return False
+
 # Example usage:
 if __name__ == "__main__":
     # Example DataFrame representing a potential hierarchical structure.
-    data = {'country': ['USA', 'USA', 'Canada', 'Canada', 'Mexico'],
-             'state': ['California', 'Texas', 'Ontario', 'Quebec', 'Sonora'],
-             'city': ['Los Angeles', 'Austin', 'Toronto', 'Montreal', 'Hermosillo']}
-    df = pd.DataFrame(data)
+    # data = {'country': ['USA', 'USA', 'Canada', 'Canada', 'Mexico'],
+    #          'state': ['California', 'Texas', 'Ontario', 'Quebec', 'Sonora'],
+    #          'city': ['Los Angeles', 'Austin', 'Toronto', 'Montreal', 'Hermosillo']}
+    # df = pd.DataFrame(data)
+
+    df = pd.DataFrame({
+        'region': ['North', 'North', 'South', 'South'],
+        'city': ['NY', 'Boston', 'Miami', 'Austin'],
+        'value': [100, 200, 300, 400]
+    })
     
     rels = find_hierarchical_relationships(df)
-    if (len(rels) > 0):
-        rels2 = find_hierarchical_relationships(df, unique_threshold=0.99, min_multichild_ratio=1.0)
-        rels =  list(set(rels + rels2))
     print("Hierarchical relationships (parent -> child):")
     for parent, child in rels:
         print(f"{parent} -> {child}")

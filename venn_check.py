@@ -61,11 +61,8 @@ def parse_answer(answer):
         raise ValueError(f"Invalid answer: {last_line}")
     
 
-def check_venn(csv_file):
-    df = detect_index_and_read_csv(csv_file)
-    col1_name = df.columns[0]
-    col2_name = df.columns[1]
-    prompt = generate_venn_prompt(csv_file, col1_name, col2_name)
+def check_venn(filename:str, col1_name:str, col2_name:str):
+    prompt = generate_venn_prompt(filename, col1_name, col2_name)
     answer = run_llama3(prompt)
     return parse_answer(answer)
 

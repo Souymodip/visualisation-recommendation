@@ -8,6 +8,9 @@ import plotly.graph_objects as go
 from scipy import stats
 from sklearn.decomposition import PCA
 from scipy.cluster import hierarchy
+from matplotlib_venn import venn2
+from pandas.plotting import parallel_coordinates
+from chart_types import ChartType
 
 sns.set_theme(style="whitegrid")
 
@@ -339,6 +342,235 @@ def plot_dendrogram():
     save_plot(plt, "dendrogram")
 
 
+# 21. VENN_DIAGRAM
+
+def plot_venn_diagram():
+    plt.figure(figsize=(6,6))
+    # Example: two sets with some overlap.
+    set1 = set(['A', 'B', 'C', 'D'])
+    set2 = set(['C', 'D', 'E', 'F'])
+    venn2([set1, set2], set_labels=('Set1', 'Set2'))
+    plt.title('Venn Diagram')
+    save_plot(plt, "venn_diagram")
+
+# 21. BAR_CHART
+def plot_bar_chart():
+    sample = get_sample_df()
+    df = sample['df']
+    plt.figure(figsize=(8, 6))
+    # Count frequency of each category.
+    order = df['category'].value_counts().index
+    sns.countplot(x='category', data=df, order=order)
+    plt.title('Bar Chart of Category Frequency')
+    plt.xlabel('Category')
+    plt.ylabel('Count')
+    save_plot(plt, "bar_chart")
+
+# 22. WAFFLE_CHART
+def plot_waffle_chart():
+    # Simple waffle chart from sample categorical frequency.
+    sample = get_sample_df()
+    df = sample['df']
+    counts = df['category'].value_counts().to_dict()
+    total = sum(counts.values())
+    # Define grid dimensions.
+    rows, cols = 10, 10
+    total_tiles = rows * cols
+    # Calculate number of tiles for each category.
+    tiles = {cat: int(count/total * total_tiles) for cat, count in counts.items()}
+    
+    # Create grid.
+    waffle = np.zeros((rows, cols))
+    flat_index = 0
+    for cat, tile_count in tiles.items():
+        for _ in range(tile_count):
+            r, c = divmod(flat_index, cols)
+            waffle[r, c] = ord(cat[0])  # use ascii code as a stand-in for color/label
+            flat_index += 1
+    
+    plt.figure(figsize=(6, 6))
+    plt.matshow(waffle, cmap="viridis", fignum=1)
+    plt.title('Waffle Chart')
+    plt.xticks([])
+    plt.yticks([])
+    save_plot(plt, "waffle_chart")
+
+# 23. WORD_CLOUD
+def plot_word_cloud():
+    # Create a simple word cloud from sample text.
+    text = "data visualization chart plot graph analysis python matplotlib seaborn plotly"
+    wordcloud = WordCloud(width=800, height=400, background_color="white").generate(text)
+    plt.figure(figsize=(10, 5))
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.title('Word Cloud')
+    save_plot(plt, "word_cloud")
+
+# 24. DONUT_CHART
+def plot_donut_chart():
+    sample = get_sample_df()
+    df = sample['df']
+    counts = df['category'].value_counts()
+    plt.figure(figsize=(8, 8))
+    wedges, texts, autotexts = plt.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90)
+    # Draw a white circle in the center.
+    centre_circle = plt.Circle((0,0),0.70,fc='white')
+    fig = plt.gcf()
+    fig.gca().add_artist(centre_circle)
+    plt.title('Donut Chart')
+    save_plot(plt, "donut_chart")
+
+# 25. PIE_CHART
+def plot_pie_chart():
+    sample = get_sample_df()
+    df = sample['df']
+    counts = df['category'].value_counts()
+    plt.figure(figsize=(8, 8))
+    plt.pie(counts, labels=counts.index, autopct='%1.1f%%', startangle=90)
+    plt.title('Pie Chart')
+    save_plot(plt, "pie_chart")
+
+# 26. TREE_MAP
+def plot_tree_map():
+    sample = get_sample_df()
+    df = sample['df']
+    counts = df['category'].value_counts().reset_index()
+    counts.columns = ['category', 'value']
+    plt.figure(figsize=(8, 6))
+    squarify.plot(sizes=counts['value'], label=counts['category'], alpha=.8)
+    plt.title('Tree Map')
+    plt.axis('off')
+    save_plot(plt, "tree_map")
+
+# 27. CIRCLE_PACKING
+def plot_circle_packing():
+    sample = get_sample_df()
+    df = sample['df']
+    # Aggregate data by category.
+    agg = df['category'].value_counts().reset_index()
+    agg.columns = ['category', 'value']
+    fig = px.scatter(agg, x='category', y='value', size='value', text='category',
+                     title="Circle Packing (Bubble Chart Approximation)")
+    fig.update_traces(textposition='middle center')
+    fig.show()
+
+# 28. SUNBURST_CHART
+def plot_sunburst_chart():
+    # Create sample hierarchical data.
+    df = pd.DataFrame({
+        'region': ['North', 'North', 'South', 'South', 'East', 'East'],
+        'country': ['USA', 'Canada', 'USA', 'Mexico', 'China', 'Japan'],
+        'value': [10, 15, 10, 5, 20, 10]
+    })
+    fig = px.sunburst(df, path=['region', 'country'], values='value', title="Sunburst Chart")
+    fig.show()
+
+# 29. LOLLIPOP_CHART
+def plot_lollipop_chart():
+    sample = get_sample_df()
+    df = sample['df'].groupby('category', as_index=False)['x'].mean()
+    df = df.sort_values('x')
+    plt.figure(figsize=(8, 6))
+    plt.stem(df['category'], df['x'], basefmt=" ")
+    plt.title('Lollipop Chart')
+    plt.xlabel('Category')
+    plt.ylabel('Average X')
+    save_plot(plt, "lollipop_chart")
+
+# 30. GROUPED_SCATTER_PLOT
+def plot_grouped_scatter_plot():
+    sample = get_sample_df()
+    df = sample['df']
+    plt.figure(figsize=(8, 6))
+    sns.scatterplot(x='x', y='y', hue='group', style='category', data=df)
+    plt.title('Grouped Scatter Plot')
+    save_plot(plt, "grouped_scatter_plot")
+
+# 31. GROUPED_BAR_CHART
+def plot_grouped_bar_chart():
+    sample = get_sample_df()
+    df = sample['df']
+    # Aggregate mean x by category and group.
+    agg = df.groupby(['category', 'group'], as_index=False)['x'].mean()
+    plt.figure(figsize=(8, 6))
+    sns.barplot(x='category', y='x', hue='group', data=agg)
+    plt.title('Grouped Bar Chart')
+    plt.xlabel('Category')
+    plt.ylabel('Average X')
+    save_plot(plt, "grouped_bar_chart")
+
+# 32. PARALLEL_PLOT
+def plot_parallel_plot():
+    sample = get_sample_df()
+    df = sample['df'][['x', 'y', 'z', 'group']]
+    plt.figure(figsize=(10, 6))
+    parallel_coordinates(df, class_column='group', colormap=plt.get_cmap("Set2"))
+    plt.title('Parallel Plot')
+    save_plot(plt, "parallel_plot")
+
+# 33. SPIDER_CHART
+def plot_spider_chart():
+    sample = get_sample_df()
+    df = sample['df'].groupby('category', as_index=False).mean()
+    # Categories for spider chart axes.
+    categories = list(df.columns[1:])  # skip category column
+    N = len(categories)
+    # Compute angles for each axis.
+    angles = np.linspace(0, 2 * np.pi, N, endpoint=False).tolist()
+    angles += angles[:1]  # close the circle
+
+    plt.figure(figsize=(8, 8))
+    ax = plt.subplot(111, polar=True)
+    for i, row in df.iterrows():
+        values = row[1:].tolist()
+        values += values[:1]
+        ax.plot(angles, values, label=row['category'])
+        ax.fill(angles, values, alpha=0.25)
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(categories)
+    plt.title('Spider Chart')
+    plt.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1))
+    save_plot(plt, "spider_chart")
+
+# 34. STACKED_BAR_CHART
+def plot_stacked_bar_chart():
+    sample = get_sample_df()
+    df = sample['df']
+    # Create a pivot table: count of rows per category and group.
+    pivot = df.pivot_table(index='category', columns='group', aggfunc='size', fill_value=0)
+    pivot.plot(kind='bar', stacked=True, figsize=(8, 6))
+    plt.title('Stacked Bar Chart')
+    plt.xlabel('Category')
+    plt.ylabel('Count')
+    save_plot(plt, "stacked_bar_chart")
+
+# 35. SANKEY_CHART
+def plot_sankey_chart():
+    # Create a simple Sankey diagram using Plotly.
+    node_labels = ["A", "B", "C", "D"]
+    # Example links between nodes.
+    source = [0, 0, 1, 1]
+    target = [2, 3, 2, 3]
+    values = [8, 4, 2, 6]
+    
+    fig = go.Figure(data=[go.Sankey(
+        node=dict(
+            pad=15,
+            thickness=20,
+            line=dict(color="black", width=0.5),
+            label=node_labels
+        ),
+        link=dict(
+            source=source,
+            target=target,
+            value=values
+        ))])
+    fig.update_layout(title_text="Sankey Chart", font_size=10)
+    fig.show()
+
+
+# def 
+
 def test():
     # Execute all plotting functions
     plot_histogram()
@@ -361,7 +593,23 @@ def test():
     plot_correlogram()
     plot_heatmap()
     plot_dendrogram()
+    plot_venn_diagram()
+    plot_bar_chart()
+    plot_waffle_chart()
+    plot_word_cloud()
+    plot_donut_chart()
+    plot_pie_chart()
+    plot_tree_map()
+    plot_circle_packing()
+    plot_sunburst_chart()
+    plot_lollipop_chart()
+    plot_grouped_scatter_plot()
+    plot_grouped_bar_chart()
+    plot_parallel_plot()
+    plot_spider_chart()
+    plot_stacked_bar_chart()
+    plot_sankey_chart()
 
 
 if __name__ == "__main__":
-    test()
+    plot_venn_diagram()
