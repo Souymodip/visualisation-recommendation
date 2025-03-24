@@ -3,7 +3,7 @@ from scipy.stats import spearmanr
 
 def is_weakly_ordered(df):
     """Check if a column is weakly increasing or decreasing (allows duplicates)."""
-    return any(df[c].is_monotonic or df[c].is_monotonic_decreasing for c in df.columns)
+    return any(df[c].is_monotonic_increasing or df[c].is_monotonic_decreasing for c in df.columns)
 
 def is_approximately_ordered(series, threshold=0.9):
     """Check if a column is approximately ordered using Spearman's correlation."""

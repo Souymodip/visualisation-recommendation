@@ -12,6 +12,7 @@ from aux import print_green, print_yellow, print_red
 from chart_types import get_chart_type_name
 from sample_plots import plot_chart
 from chart_types import ChartType
+import timeseries_rec as ts
 
 
 def show_recommendations(recommendations):
@@ -36,6 +37,13 @@ def top_level_decision(csv_path):
 
     print(f"Plotting recommendations for [{base_name}]")
 
+    if len(time_cols) == 1 and len(numerical_cols) == df.shape[1]:
+        print_green(f"[@] Time Series Detected.")
+        recommendations = ts.case_to_recommendation(ts.flow_chart(df))
+        show_recommendations(recommendations)
+    else:
+        print_red(f"[@] Not a Numerical Time Series DataFrame.")
+
     if len(numerical_cols) == df.shape[1]:
         print_green(f"[@] Only Numerical DataFrame.")
         recommendations = strict_num_recommendation(strict_num_flow_chart(df))        
@@ -58,12 +66,6 @@ def top_level_decision(csv_path):
     else:
         print_red(f"[@] Not a Mixed DataFrame.")
 
-    if len(time_cols) > 0 and len(numerical_cols) == df.shape[1]:
-        print_green(f"[@] Time Series Detected.")
-        show_recommendations([ChartType.LINE_PLOT, ChartType.AREA_PLOT, ChartType.RIDGE_LINE])
-    else:
-        print_red(f"[@] Not a Numerical Time Series DataFrame.")
-
     if network_check(df, base_name):
         print_green(f"[@] Network DataFrame.")
         recommendations = []
@@ -74,7 +76,7 @@ def top_level_decision(csv_path):
 
 
 def main():
-    csv_path = "/Users/priyankachakraborti/GIT/infographics-data/csv/data/top10s (version 1).xlsb.csv"
+    csv_path = "/Users/priyankachakraborti/GIT/infographics-data/csv/data/tunnel.csv"
     top_level_decision(csv_path)
 
 if __name__ == "__main__":
