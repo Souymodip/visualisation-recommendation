@@ -1,6 +1,5 @@
 import pandas as pd
 from run_llm import run_llama3
-from read import detect_index_and_read_csv
 
 
 def generate_venn_prompt(csv_filename, col1_name, col2_name):

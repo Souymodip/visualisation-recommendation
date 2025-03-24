@@ -11,6 +11,8 @@ from scipy.cluster import hierarchy
 from matplotlib_venn import venn2
 from pandas.plotting import parallel_coordinates
 from chart_types import ChartType
+import squarify
+from wordcloud import WordCloud
 
 sns.set_theme(style="whitegrid")
 
@@ -613,3 +615,58 @@ def test():
 
 if __name__ == "__main__":
     plot_venn_diagram()
+
+def plot_chart(chart_type: ChartType):
+    """
+    Plots a specific chart based on the provided ChartType enum value.
+    
+    Args:
+        chart_type (ChartType): The type of chart to plot
+    """
+    plot_functions = {
+        ChartType.HISTOGRAM: plot_histogram,
+        ChartType.DENSITY_PLOT_1D: plot_density_1d,
+        ChartType.BOX_PLOT: plot_box_plot,
+        ChartType.SCATTER_PLOT_2D: plot_scatter_2d,
+        ChartType.VIOLIN_PLOT: plot_violin,
+        ChartType.SCATTER_PLOT_WITH_MARGINALS: plot_scatter_with_marginals,
+        ChartType.DENSITY_PLOT_2D: plot_density_2d,
+        ChartType.CONNECTED_SCATTER_PLOT: plot_connected_scatter,
+        ChartType.AREA_PLOT: plot_area,
+        ChartType.LINE_PLOT: plot_line,
+        ChartType.BUBBLE_PLOT: plot_bubble,
+        ChartType.SCATTER_PLOT_3D: plot_scatter_3d,
+        ChartType.SURFACE_PLOT: plot_surface,
+        ChartType.STACKED_AREA_PLOT: plot_stacked_area,
+        ChartType.STREAM_GRAPH: plot_stream_graph,
+        ChartType.RIDGE_LINE: plot_ridge_line,
+        ChartType.PCA: plot_pca,
+        ChartType.CORRELOGRAM: plot_correlogram,
+        ChartType.HEATMAP: plot_heatmap,
+        ChartType.DENDROGRAM: plot_dendrogram,
+        ChartType.VENN_DIAGRAM: plot_venn_diagram,
+        ChartType.BAR_CHART: plot_bar_chart,
+        ChartType.WAFFLE_CHART: plot_waffle_chart,
+        ChartType.WORD_CLOUD: plot_word_cloud,
+        ChartType.DONUT_CHART: plot_donut_chart,
+        ChartType.PIE_CHART: plot_pie_chart,
+        ChartType.TREE_MAP: plot_tree_map,
+        ChartType.CIRCLE_PACKING: plot_circle_packing,
+        ChartType.SUNBURST_CHART: plot_sunburst_chart,
+        ChartType.LOLLIPOP_CHART: plot_lollipop_chart,
+        ChartType.GROUPED_SCATTER_PLOT: plot_grouped_scatter_plot,
+        ChartType.GROUPED_BAR_CHART: plot_grouped_bar_chart,
+        ChartType.PARALLEL_PLOT: plot_parallel_plot,
+        ChartType.SPIDER_CHART: plot_spider_chart,
+        ChartType.STACKED_BAR_CHART: plot_stacked_bar_chart,
+        ChartType.SANKEY_CHART: plot_sankey_chart
+    }
+    
+    if chart_type not in plot_functions:
+        raise ValueError(f"Chart type {chart_type} is not supported")
+    
+    plot_functions[chart_type]()
+    plt.close('all')
+
+# Example usage:
+# plot_chart(ChartType.HISTOGRAM)

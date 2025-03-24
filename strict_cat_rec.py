@@ -1,13 +1,13 @@
 import pandas as pd
-from read import detect_index_and_read_csv
 from venn_check import check_venn
 from hierarchy_decision import find_hierarchical_relationships
 from chart_types import ChartType
+from aux import print_yellow
 
 def flow_chart(df:pd.DataFrame, filename:str):
     num_columns = len(df.columns)
     if num_columns == 1:
-        print(f'Recommendation is to convert to frequency table')
+        print_yellow(f'\t\t Recommendation is to convert to frequency table')
         return 0
     elif num_columns == 2  and check_venn(filename, df.columns[0], df.columns[1]):
         return 1
@@ -16,7 +16,7 @@ def flow_chart(df:pd.DataFrame, filename:str):
         if len(rels) > 0:
             return 2
         else:
-            print(f'Recommendation is to convert to frequency table')
+            print_yellow(f'\t\t Recommendation is to convert to frequency table')
             return 3
         
 def case_to_recommendation(case:int):

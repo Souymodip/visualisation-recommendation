@@ -38,3 +38,10 @@ class ChartType(Enum):
     STACKED_BAR_CHART=35
     SANKEY_CHART=36
     
+def get_chart_type_name(chart_type: ChartType) -> str:
+    return chart_type.name.lower().replace('_', ' ')
+
+# If you need to get all chart type names as a list, you can also add this function:
+def get_all_chart_type_names(types:list[ChartType]) -> list[str]:
+    return [get_chart_type_name(chart_type) for chart_type in types]
+    

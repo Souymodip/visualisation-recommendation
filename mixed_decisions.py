@@ -29,6 +29,13 @@ def has_several_cat_and_one_num(df):
     return (len(cat_cols) >= 1) and (len(num_cols) == 1)
 
 
+def has_several_cat_and_several_num(df):
+    # At least one categorical column and one numerical column.
+    cat_cols = df.select_dtypes(include=["object", "category"]).columns
+    num_cols = df.select_dtypes(include=["number"]).columns
+    return (len(cat_cols) >= 1) and (len(num_cols) >= 1)
+
+
 def common_ordered_numeric_column(df):
     # Identify the single categorical column and numerical columns.
     cat_col = df.select_dtypes(include=["object", "category"]).squeeze()

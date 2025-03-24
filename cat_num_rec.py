@@ -1,49 +1,54 @@
 import pandas as pd
-import os
 from mixed_decisions import has_one_cat_one_num, has_one_cat_and_several_num, is_categorical_unique
-from mixed_decisions import common_ordered_numeric_column, has_several_cat_and_one_num, check_categorical_hierarchy, check_categorical_uniqueness
+from mixed_decisions import common_ordered_numeric_column, has_several_cat_and_one_num, check_categorical_hierarchy, check_categorical_uniqueness, has_several_cat_and_several_num
 from chart_types import ChartType
+from aux import print_yellow
 
-def flow_chart(df, base_name):
+def flow_chart(df):
     # if df has one cat and one num, return base_name
     if has_one_cat_one_num(df):
         # if cat is unique
         if is_categorical_unique(df):
-            print('One cat and one num, cat is unique')
+            print_yellow('\tOne cat and one num, cat is unique')
             return 0
         # if cat is not unique
         else:
-            print('One cat and one num, cat is not unique')
+            print_yellow('\tOne cat and one num, cat is not unique')
             return 1
     elif has_one_cat_and_several_num(df):
         # Cat col is unique
         if is_categorical_unique(df):
-            print('One cat and several num, cat row is unique')
+            print_yellow('\tOne cat and several num, cat row is unique')
             return 2
         # Cat col is not unique
         elif common_ordered_numeric_column(df):
-            print('One cat and several num, cat is not unique and num is ordered')
+            print_yellow('\tOne cat and several num, cat is not unique and num is ordered')
             return 3
         # Cat col is not unique and not ordered
         else:
-            print('One cat and several num, cat is not unique and num is not ordered')
+            print_yellow('\tOne cat and several num, cat is not unique and num is not ordered')
             return 4
-    elif has_several_cat_and_one_num(df):
+    elif has_several_cat_and_one_num(df) or has_several_cat_and_several_num(df):
         # has hierarchy
         if check_categorical_hierarchy(df):
             # each row for the cat col is unique
             if check_categorical_uniqueness(df):
-                print('Has hierarchy, Several cat and one num, cat row is unique')
+                print_yellow('\tHas hierarchy, Several cat and num(s), cat row is unique')
                 return 5
             else:
-                print('Has hierarchy, Several cat and one num, cat is not unique')
+                print_yellow('\tHas hierarchy, Several cat and num(s), cat is not unique')
                 return 6
         else:
-            print('Has no hierarchy, Several cat and one num')
-            return 7
+            print_yellow('\tHas no hierarchy, Several cat and num(s)')
+            if check_categorical_uniqueness(df):
+                print_yellow('\tHas no hierarchy, Several cat and num(s), cat row is unique')
+                return 7
+            else:
+                print_yellow('\tHas no hierarchy, Several cat and num(s), cat is not unique')
+                return 8
     else:
-        print('No cat and one num')
-        return 8
+        print_yellow('\tNo cat and one num')
+        return 9
     
 
 def case_to_recommendation(case:int):
@@ -72,12 +77,12 @@ def case_to_recommendation(case:int):
             ChartType.GROUPED_SCATTER_PLOT, ChartType.DENSITY_PLOT_2D, ChartType.BOX_PLOT,
             ChartType.VIOLIN_PLOT, ChartType.PCA, ChartType.CORRELOGRAM
         ]
-    elif case == 5:
+    elif case == 5 or case == 7:
         return [
             ChartType.BAR_CHART, ChartType.DENDROGRAM, ChartType.SUNBURST_CHART, ChartType.TREE_MAP,
             ChartType.CIRCLE_PACKING,
         ]
-    elif case == 6:
+    elif case == 6 or case == 8:
         return [
             ChartType.BOX_PLOT, ChartType.VIOLIN_PLOT
         ]

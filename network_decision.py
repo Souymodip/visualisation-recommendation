@@ -2,7 +2,7 @@ import os
 import pandas as pd
 import numpy as np
 from run_llm import run_llama3
-from read import detect_index_and_read_csv
+from aux import print_cyan
 
 context_prompt = """
 Heuristics for Detecting Network Data (Edge List or Adjacency Matrix)
@@ -77,9 +77,7 @@ def check_dataframe_structure(df: pd.DataFrame) -> bool:
     return False
 
 
-def create_csv_meta_data(csv_path):
-    base_name = os.path.basename(csv_path)
-    df = detect_index_and_read_csv(csv_path)
+def create_csv_meta_data(df, base_name):
     columns = df.columns.values.tolist()
     column_types = [str(df[col].dtype) for col in columns]
     column_info = [f"{col} ({typ})" for col, typ in zip(columns, column_types)]
@@ -92,49 +90,6 @@ First few rows:
 {sample_data}
 """
     return metadata, df
-
-
-# def create_test_llm_queries():
-#     """Create LLM queries for each test case."""
-#     test_cases = generate_test_cases()
-#     llm_queries = []
-    
-#     for filename, df, is_network, description in test_cases:
-#         # Get column information
-#         columns = df.columns.tolist()
-#         column_types = [str(df[col].dtype) for col in columns]
-#         column_info = [f"{col} ({typ})" for col, typ in zip(columns, column_types)]
-        
-#         # Get sample data (first 3 rows as string representation)
-#         sample_data = df.head(3).to_string(index=False)
-        
-#         # Create metadata string
-#         metadata = f"""
-# Filename: {filename}
-# Number of columns: {len(columns)}
-# Column names and types: {', '.join(column_info)}
-# First few rows:
-# {sample_data}
-# """
-        
-#         # Create full prompt
-#         query = f"""
-# Context:
-# {context_prompt}
-
-# {metadata}
-
-# Question: Is this CSV likely to contain network data (edge list or adjacency matrix)? Explain your reasoning.
-# """
-        
-#         llm_queries.append({
-#             "query": query,
-#             "filename": filename,
-#             "expected_is_network": is_network,
-#             "description": description
-#         })
-    
-#     return llm_queries
 
 
 def parse_llm_answer(ans):
@@ -152,22 +107,17 @@ def parse_llm_answer(ans):
 
 def parse_llm_bool(ans):
     querry = f'No explanation necessary only 1 or 0. Check the following paragraph, and answer only 1 if the paragraph confirms existence of network data, and answer only 0 other wise: \n {ans}. No explanation necessary only 1 or 0.\n Your answer ?'
-    print(f'------- sub querry : Sentiment -----------')
     out = run_llama3(querry)
-    print(out)
-    print("------------------------------------------- ")
     return '1' in out.lower()
     
 
 
-def check(csv_path):
-    meta, df = create_csv_meta_data(csv_path=csv_path)
+def check(df, base_name):
+    meta, df = create_csv_meta_data(df, base_name)
     if check_dataframe_structure(df):
         # import pdb; pdb.set_trace()
         cmd = context_prompt + meta + "\n Give reason for your decision. In the end, final answer in the last line in the format. \n Answer: Yes (or No)\n"
         out = run_llama3(cmd)
-        print(f'----------------------- {os.path.basename(csv_path)} ---------------------')
-        print(out)
         return parse_llm_answer(out)
     else:
         return False
